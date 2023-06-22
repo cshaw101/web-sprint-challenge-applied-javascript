@@ -1,3 +1,6 @@
+import axios from "axios";
+import { response } from "msw";
+
 const Card = (article) => {
 
   const cardElement = document.createElement('div');
@@ -54,22 +57,23 @@ const Card = (article) => {
 }
 
 const cardAppender = (selector) => {
+  
+  const apiUrl = 'http://localhost:5001/api/articles';
 
-  axios
-    .get('http://localhost:5001/api/articles')
+  axios.get(apiUrl)
     .then(response => {
-      const articles = Object.values(response.data.articles);
+      const data = response.data.articles;
+      const categories = Object.values(data);
 
-      const targetElement = document.querySelector(selector);
-      if (targetElement) {
-        articles.forEach(article => {
-          const cardMarkup = Card(article);
-          targetElement.appendChild(cardMarkup);
+      categories.forEach(category => {
+        category.forEach(article => {
+          const card = Card(article);
+          document.querySelector(selector).appendChild(card);
         });
-      }
+      });
     })
     .catch(error => {
-      console.error('Error:', error);
+      console.log('Error:', error);
     });
 
 
@@ -82,5 +86,6 @@ const cardAppender = (selector) => {
   // Append each card to the element in the DOM that matches the selector passed to the function.
   //
 }
+
 
 export { Card, cardAppender }
